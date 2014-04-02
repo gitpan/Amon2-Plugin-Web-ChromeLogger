@@ -3,13 +3,20 @@ use strict;
 use warnings;
 use Web::ChromeLogger;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub init {
     my ($class, $c, $conf) = @_;
 
+    return if $conf->{disabled};
+
+    return if $ENV{PLACK_ENV} && $ENV{PLACK_ENV} eq 'production'
+                    && !$conf->{enable_in_production};
+
     $c->add_trigger('BEFORE_DISPATCH' => sub {
-        $_[0]->{chrome_logger} = Web::ChromeLogger->new;
+        $_[0]->{chrome_logger} = Web::ChromeLogger->new(
+            json_encoder => $conf->{json_encoder},
+        );
     });
 
     $c->add_trigger('AFTER_DISPATCH' => sub {
@@ -76,12 +83,31 @@ To get C<Web::ChromeLogger> instance.
     $c->chrome_logger->info('kai!');
     $c->chrome_logger->warn('nalu!');
 
+NOTE that this plugin is disabled under PLACK_ENV:production environment by default.
+If you want to enable this plugin under production environment, you should set TRUE value to the C<enable_in_production> option.
+
 
 =head1 METHODS
 
 =head2 init
 
 initialized this plugin
+
+
+=head1 PLUGIN OPTION
+
+=head2 disabled
+
+If you set TRUE value to this option, then the plugin will be disabled.
+
+=head2 enable_in_production
+
+To set TRUE value to this option, then the plugin will be enabled even if environment is under PLACK_ENV:production.
+By default, this plugin is disabled under PLACK_ENV:production environment.
+
+=head2 json_encoder
+
+You can pass C<json_encoder> to L<WEB::ChromeLogger>.
 
 
 =head1 REPOSITORY

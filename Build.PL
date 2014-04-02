@@ -15,10 +15,12 @@ my $builder = Module::Build->new(
         'Test::More' => 0.88,
         'Test::Requires' => 0,
         'MIME::Base64' => 0,
+        'JSON' => 0,
         'JSON::XS' => 0,
     },
     requires => {
         'perl' => '5.008001',
+        'Amon2' => 0,
         'Web::ChromeLogger' => 0.04,
     },
     add_to_cleanup      => [ 'Amon2-Plugin-Web-ChromeLogger-*' ],
